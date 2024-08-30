@@ -7,14 +7,14 @@ const multer = require('../middleware/multer-config');
 const stuffCtrl = require('../controllers/stuff');
 
 // Authentification non requise
-router.get('/api/books', stuffCtrl.getAllBooks); // array of books
-router.get('/api/books/:id', stuffCtrl.getOneBook); // single book
-router.get('api/books/bestrating', stuffCtrl.getBestRatingBooks); // array of books best rating /* CREER LE getBestRatingBooks */
+router.get('/books', stuffCtrl.getAllBooks); // array of books
+router.get('/:id', stuffCtrl.getOneBook); // single book
+// router.get('/bestrating', stuffCtrl.getBestRatingBooks); // array of books best rating /* CREER LE getBestRatingBooks */
 
 // Authentification requise
-router.post('/api/books', auth, multer, stuffCtrl.createBook);
-router.put('/api/books/:id', auth, multer, stuffCtrl.modifyBook);
-router.delete('/api/books/:id', auth, stuffCtrl.deleteBook);
-router.post('/api/books/:id/rating', auth, stuffCtrl.ratingNotation); // For rating notation books /* CREER LE ratingNotation */ 
+router.post('/books', auth, multer, stuffCtrl.createBook);
+// router.put('/:id', auth, multer, stuffCtrl.modifyBook);
+// router.delete('/:id', auth, stuffCtrl.deleteBook);
+// router.post('/:id/rating', auth, stuffCtrl.ratingNotation); // For rating notation books /* CREER LE ratingNotation */ 
 
 module.exports = router;
