@@ -6,6 +6,7 @@ const userRoutes = require('./routes/user'); // Importer les routes d'utilisateu
 const stuffRoutes = require('../backend/routes/stuff');
 const app = express();
 
+
 // Servir les fichiers statiques du dossier "images"
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
@@ -29,6 +30,6 @@ mongoose.connect('mongodb+srv://naturalizee:4nskdAwEHtvvNYcx@cluster0.evt76.mong
 
 // Utiliser les routes d'utilisateur
 app.use('/api/auth', userRoutes);
-app.use('/api', stuffRoutes);
+app.use('/api/books', stuffRoutes);
 
 module.exports = app;

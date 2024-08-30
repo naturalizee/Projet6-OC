@@ -8,7 +8,6 @@ exports.createBook = (req, res, next) => {
         delete bookObject._userId;
 
         const { title, author, year, genre } = bookObject;
-        console.log('Données du livre :', title, author, year, genre);
 
         const book = new Book({
             ...bookObject,
@@ -35,7 +34,7 @@ exports.createBook = (req, res, next) => {
     }
 };
 
-  
+
 //     book.save()
 //     .then(() => { res.status(201).json({message: 'Objet enregistré !'})})
 //     .catch(error => { res.status(400).json( { error })})
@@ -74,26 +73,80 @@ exports.createBook = (req, res, next) => {
 //                 .catch(error => res.status(401).json({error}));
 //             });
 //         }
-        
+
 //     } )
 //     .catch(error => {
 //         res.status(500).json({error});
 //     })
 // };
 
-exports.getOneBook = (req, res, next) => {
-    Book.findOne({ _id: req.params.id })
-        .then(books => res.status(200).json(books))
-        .catch(error => res.status(404).json({ error }));
+exports.getOneBook = async (req, res) => {
+    try {
+        console.log('Recherche du livre avec ID:', req.params.id);
+        const book = await Book.findById(req.params.id);
+        if (!book) {
+            console.log('Livre non trouvé');
+            return res.status(404).json({ message: 'Livre non trouvé' });
+        }
+        console.log('Livre trouvé:', book);
+        res.status(200).json(book);
+    } catch (error) {
+        console.error('Erreur lors de la récupération du livre:', error);
+        res.status(500).json({ message: error.message });
+    }
 };
+
 
 exports.getAllBooks = async (req, res) => {
     try {
-      const books = await Book.find().catch((error) =>
-        res.status(400).json({ error })
-      ); // si le serveur ne comprend pas la requete
-      res.json(books); // Les livres sont envoyés au client sous forme de réponse JSON
+        const books = await Book.find().catch((error) =>
+            res.status(400).json({ error })
+        );
+        res.json(books);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
-  };
+};
+
+
+exports.rateBook = async (req, res) => {
+    try {
+        const { userId, rating } = req.body;
+        const bookId = req.params.id;
+        if (rating < 0 || rating > 5) {
+            return res.status(400).json({ message: 'La note doit être comprise entre 0 et 5.' });
+        }
+        const book = await Book.findById(bookId);
+        if (!book) {
+            return res.status(404).json({ message: 'Livre non trouvé.' });
+        }
+        const existingRating = book.ratings.find(r => r.userId === userId);
+        if (existingRating) {
+            return res.status(400).json({ message: 'Vous avez déjà noté ce livre.' });
+        }
+        book.ratings.push({ userId, grade: rating });
+        const totalRatings = book.ratings.length;
+        const totalScore = book.ratings.reduce((sum, r) => sum + r.grade, 0);
+        book.averageRating = totalScore / totalRatings;
+        await book.save();
+        console.log('Note ajoutée avec succès:', book);
+        res.status(200).json(book);
+    } catch (error) {
+        console.error('Erreur lors de l\'ajout de la note:', error);
+        res.status(500).json({ message: 'Erreur lors de l\'ajout de la note.' });
+    }
+};
+
+
+exports.getBestRatingBooks = async (req, res) => {
+    try {
+        // Trouver les livres triés par note moyenne (averageRating) en ordre décroissant
+        const books = await Book.find().sort({ averageRating: -1 }).limit(3); // Limite à 3 livres par exemple
+        console.log('Livres avec les meilleures notes:', books);
+        res.status(200).json(books);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des livres les mieux notés:', error);
+        res.status(500).json({ message: 'Erreur lors de la récupération des livres les mieux notés.' });
+    }
+};
+
