@@ -12,14 +12,14 @@ const storage = multer.diskStorage({
         callback(null, 'images');
     },
     filename: (req, file, callback) => {
-        const name = file.originalname.split(' ').join('_');  // Correction ici
+        const name = file.originalname.split(' ').join('_');  
         const fileNameWithoutExt = name.replace(/\.[^/.]+$/, "");
         const extension = MIME_TYPES[file.mimetype];
         if (!extension) {
             return callback(new Error('Invalid file type'), false);
         }
 
-        callback(null, fileNameWithoutExt + '_' + Date.now() + '.' + extension);  // Ajout d'un timestamp pour l'unicité
+        callback(null, fileNameWithoutExt + '_' + Date.now() + '.' + extension);  
     }
 });
 
