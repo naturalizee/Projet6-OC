@@ -1,9 +1,10 @@
 // app.js
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const userRoutes = require('./routes/user'); // Importer les routes d'utilisateur
-const stuffRoutes = require('../backend/routes/stuff');
+const stuffRoutes = require('./routes/book');
 const app = express();
 
 
@@ -24,9 +25,10 @@ app.use((req, res, next) => {
 });
 
 // MONGOOSE CONNECT
-mongoose.connect('mongodb+srv://naturalizee:4nskdAwEHtvvNYcx@cluster0.evt76.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect(`mongodb+srv://${process.env.MONGOOSE_ID}:${process.env.MONGOOSE_MDP}@cluster0.evt76.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
   .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
+  .catch((error) => console.log('Connexion à MongoDB échouée !', error));
+
 
 // Utiliser les routes d'utilisateur
 app.use('/api/auth', userRoutes);
