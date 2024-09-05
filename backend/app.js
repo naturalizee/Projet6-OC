@@ -1,17 +1,25 @@
-// app.js
 require('dotenv').config();
 const express = require('express');
+const helmet = require('helmet');
 const mongoose = require('mongoose');
 const path = require('path');
-const userRoutes = require('./routes/user'); // Importer les routes d'utilisateur
+const rateLimit = require('express-rate-limit');
+const userRoutes = require('./routes/user');
 const stuffRoutes = require('./routes/book');
 const app = express();
 
+// Middleware request number limiter. 150 requests every 15 minutes
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 150,
+  standardHeaders: 'draft-7',
+});
 
-// Servir les fichiers statiques du dossier "images"
+// Middlewares application
+app.use(limiter);
 app.use('/images', express.static(path.join(__dirname, 'images')));
-
-app.use(express.json()); // Pour parser le JSON des requêtes
+app.use(express.json());
+app.use(helmet());
 
 // Middleware CORS
 app.use((req, res, next) => {
@@ -24,13 +32,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// MONGOOSE CONNECT
+// Mongoose connect
 mongoose.connect(`mongodb+srv://${process.env.MONGOOSE_ID}:${process.env.MONGOOSE_MDP}@cluster0.evt76.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch((error) => console.log('Connexion à MongoDB échouée !', error));
 
 
-// Utiliser les routes d'utilisateur
+// Use of main routes
 app.use('/api/auth', userRoutes);
 app.use('/api/books', stuffRoutes);
 

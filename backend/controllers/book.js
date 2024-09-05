@@ -143,7 +143,7 @@ exports.ratingNotation = async (req, res) => {
 
         const totalRatings = book.ratings.length;
         const totalScore = book.ratings.reduce((sum, r) => sum + r.grade, 0);
-        book.averageRating = totalScore / totalRatings;
+        book.averageRating = Math.round(totalScore / totalRatings);
 
         await book.save();
 
