@@ -34,7 +34,7 @@ const convertImage = async (req, res, next) => {
 
         // Conversion de l'image en WebP
         await sharp(req.file.buffer)
-            .webp({ quality: 20 })
+            .webp({ quality: 60 })
             .toFile(path.join('images', newFileName));
 
         // Mise à jour des informations du fichier dans req.file
