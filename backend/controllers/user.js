@@ -33,7 +33,6 @@ exports.signup = async (req, res, next) => {
         return res.status(401).json({ message: 'Paire login/mot de passe incorrecte' });
       }
   
-      // Si tout est correct, créer un token JWT et renvoyer la réponse
       const token = jwt.sign(
         { userId: user._id },
         process.env.SECRET_KEY,

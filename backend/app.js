@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
 const userRoutes = require('./routes/user');
-const stuffRoutes = require('./routes/book');
+const booksRoutes = require('./routes/book');
 const app = express();
 
 // Middleware request number limiter. 150 requests every 15 minutes
@@ -40,6 +40,6 @@ mongoose.connect(`mongodb+srv://${process.env.MONGOOSE_ID}:${process.env.MONGOOS
 
 // Use of main routes
 app.use('/api/auth', userRoutes);
-app.use('/api/books', stuffRoutes);
+app.use('/api/books', booksRoutes);
 
 module.exports = app;
